@@ -1,0 +1,584 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\geometry{margin=1in}
+
+\title{Sasando Acoustic Replication: Mathematical Modeling of Traditional Instrument Sound in Electric Versions}
+\author{Ryan Le}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% ============================================================================
+% ABSTRACT
+% ============================================================================
+\begin{abstract}
+% TODO: Write abstract
+% - Brief problem statement: Electric sasando lacks acoustic quality of traditional sasando
+% - Approach: Dual Fourier series model to replicate resonator effects
+% - Key method: Extract parameters from reference signals, apply to electric input
+% - Results: Model successfully replicates harmonic structure using 400 harmonics
+% - Significance: Foundation for preserving traditional instrument sound in electric versions
+\end{abstract}
+
+% ============================================================================
+% 1. INTRODUCTION
+% ============================================================================
+\section{Introduction}
+
+\subsection{Problem Statement}
+% TODO: Write problem statement
+% - Background on traditional sasando instrument
+%   - Hand-formed, dried lontar leaf resonator
+%   - Natural amplification of frequencies 98-1047 Hz
+%   - Bamboo tube: 70 cm length, 8 cm diameter
+% - Modern electric sasando: pickup and speaker system
+% - Problem: Sacrifices acoustic quality for portability
+% - Challenge: Replicate authentic acoustic sound in electric version
+
+\subsection{Objective}
+% TODO: Write objective
+% - Develop mathematical model to represent acoustic characteristics
+% - Replicate resonator's frequency-dependent amplification effects
+% - Preserve harmonic structure and decay characteristics
+% - Provide foundation for real-time sound synthesis
+
+\subsection{Approach Overview}
+% TODO: Write approach overview
+% - Dual Fourier series model
+% - Decompose acoustic signal into harmonic components
+% - Model resonator contribution as frequency-dependent transformation
+% - Extract features from recorded signals
+% - Reconstruct using mathematical framework for DSP implementation
+
+% ============================================================================
+% 2. THEORY
+% ============================================================================
+\section{Theory}
+
+\subsection{Notation}
+
+\subsubsection{Time Domain Variables}
+\begin{itemize}
+    \item $t$: Time (seconds)
+    \item $f(t)$: Signal as a function of time
+    \item $E(t)$: Amplitude envelope function
+    \item $A_0$: Initial amplitude of the envelope
+    \item $\tau$: Decay time constant (seconds)
+\end{itemize}
+
+\subsubsection{Frequency Domain Variables}
+\begin{itemize}
+    \item $f_0$: Fundamental frequency (Hz)
+    \item $\omega_0 = 2\pi f_0$: Fundamental angular frequency (rad/s)
+    \item $n$: Harmonic index (integer: 0, 1, 2, \ldots)
+    \item $nf_0$: Frequency of the $n$-th harmonic (Hz)
+    \item $M_n$: Magnitude of the $n$-th harmonic from FFT
+\end{itemize}
+
+\subsubsection{Fourier Series Coefficients}
+\begin{itemize}
+    \item $A_n$: Amplitude coefficient for the $n$-th harmonic
+    \item $\phi_n$: Phase coefficient for the $n$-th harmonic
+    \item $\alpha_n$: Frequency-dependent amplitude scaling factor for the $n$-th harmonic
+    \item $\theta$: Phase shift introduced by the resonator (radians)
+\end{itemize}
+
+\subsubsection{Signal Processing}
+\begin{itemize}
+    \item $F_s$: Sampling rate (Hz) - typically 48,000 Hz
+    \item $N$: Number of samples
+    \item $T$: Signal duration (seconds)
+    \item $\text{FFT}[\cdot]$: Fast Fourier Transform operator
+\end{itemize}
+
+\subsubsection{Model Parameters}
+\begin{itemize}
+    \item $\text{num\_harmonics}$: Number of harmonics used in the model (400 in this work)
+    \item $\text{SASANDO\_FREQ\_MIN} = 98$ Hz: Minimum frequency of sasando resonator range
+    \item $\text{SASANDO\_FREQ\_MAX} = 1047$ Hz: Maximum frequency of sasando resonator range
+\end{itemize}
+
+\subsection{Assumptions}
+\label{sec:assumptions}
+
+The mathematical model is based on the following assumptions:
+
+\begin{enumerate}
+    \item \textbf{Harmonic Structure}: The signal can be accurately represented as a sum of harmonics (integer multiples of the fundamental frequency). This assumes that inharmonic partials are negligible or can be approximated by nearby harmonics.
+    
+    \item \textbf{Linear Resonator Model}: The resonator's effect is modeled as a linear transformation with frequency-dependent amplitude scaling $\alpha_n$ and constant phase shift $\theta$. This assumes the resonator behaves linearly and does not introduce significant non-linear distortion.
+    
+    \item \textbf{Exponential Decay}: The amplitude envelope follows an exponential decay model $A_0 e^{-t/\tau}$. This assumes that the decay is uniform across all harmonics and that the decay time constant $\tau$ is constant throughout the signal.
+    
+    \item \textbf{Stationary Signal}: The signal characteristics (fundamental frequency, harmonic amplitudes, phases) are assumed to be stationary over the analysis window, except for the exponential decay envelope.
+    
+    \item \textbf{Perfect Harmonic Alignment}: The model assumes that all frequency components are exact integer multiples of the fundamental frequency $f_0$. In reality, slight frequency variations may occur.
+    
+    \item \textbf{Noise-Free Extraction}: The feature extraction process assumes that noise and continuous spectral content do not significantly affect the extraction of harmonic amplitudes and phases.
+    
+    \item \textbf{Resonator Frequency Response}: The resonator's frequency response is approximated by a step function:
+    \begin{equation}
+        \alpha_n = \begin{cases}
+            0.8 & \text{if } 98 \text{ Hz} \leq n \cdot f_0 \leq 1047 \text{ Hz} \\
+            0.2 & \text{otherwise}
+        \end{cases}
+    \end{equation}
+    This is a simplification of the actual complex frequency response.
+    
+    \item \textbf{Constant Phase Shift}: The phase shift $\theta$ introduced by the resonator is assumed to be constant across all frequencies. In reality, phase shifts may vary with frequency.
+\end{enumerate}
+
+\subsection{Sound Waves and Harmonic Decomposition}
+
+% TODO: Write section
+% - Sound waves as periodic pressure variations
+% - Fourier analysis for frequency decomposition
+% - Fundamental frequency ($f_0$): lowest frequency, perceived pitch
+% - Harmonics: integer multiples ($nf_0$)
+% - Inharmonic partials: non-integer multiples
+% - Traditional sasando: vibrating strings + lontar leaf resonator
+% - Resonator amplifies 98-1047 Hz range
+
+\subsection{Problem Composition}
+
+% TODO: Write section
+% - Harmonic Components: Primary frequency content (integer multiples) - can be represented by Fourier series
+% - Inharmonic Components: Non-harmonic partials, especially during attack phase - contribute to timbre but not captured by harmonic model
+
+\subsection{Mathematical Model}
+
+To model the interaction between the electric sasando signal and the resonator, we use a dual Fourier series representation:
+
+\begin{equation}
+\label{eq:main_model}
+f(t) = \sum_{n=0}^{\infty} A_n \cos\left(n\omega_0 t + \phi_n\right) + \sum_{n=0}^{\infty} \alpha_n A_n \cos\left(n\omega_0 t + \phi_n + \theta\right)
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item $\omega_0 = 2\pi f_0$ is the fundamental frequency in rad/s
+    \item $A_n$ are the amplitude coefficients for each harmonic (extracted from the signal)
+    \item $\phi_n$ are the phase coefficients for each harmonic (extracted from the signal)
+    \item $\alpha_n$ is the frequency-dependent amplitude scaling factor for the $n$-th harmonic (models resonator response)
+    \item $\theta$ is the phase shift introduced by the resonator (constant, typically $\pi/4$ rad)
+\end{itemize}
+
+The first sum represents the original signal decomposed into harmonics, while the second sum represents the resonator's contribution with frequency-dependent scaling $\alpha_n$ and phase shift $\theta$.
+
+\subsubsection{Resonator Response Function}
+
+The function $\alpha_n$ models the frequency-dependent amplification of the sasando resonator:
+
+\begin{equation}
+\label{eq:alpha_n}
+\alpha_n = \begin{cases}
+    0.8 & \text{if } 98 \text{ Hz} \leq n \cdot f_0 \leq 1047 \text{ Hz} \\
+    0.2 & \text{otherwise}
+\end{cases}
+\end{equation}
+
+This reflects the resonator's natural amplification of frequencies within the sasando's characteristic range.
+
+\subsection{Amplitude Envelope and Decay}
+
+Plucked string instruments exhibit exponential decay in amplitude over time. To model this, we multiply the steady-state model by an exponential envelope:
+
+\begin{equation}
+\label{eq:decay_model}
+f_{\text{decay}}(t) = E(t) \cdot f(t) = A_0 e^{-t/\tau} \cdot \left[ \sum_{n=0}^{\infty} A_n \cos\left(n\omega_0 t + \phi_n\right) + \sum_{n=0}^{\infty} \alpha_n A_n \cos\left(n\omega_0 t + \phi_n + \theta\right) \right]
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item $A_0$ is the initial amplitude (extracted from the signal's peak envelope)
+    \item $\tau$ is the decay time constant (fitted from the signal's envelope using exponential regression)
+\end{itemize}
+
+The envelope is extracted using the Hilbert transform, which provides an accurate representation of the signal's amplitude modulation.
+
+\subsection{A$_n$ Extraction Formula}
+
+When extracting the amplitude coefficients $A_n$ from a recorded signal (which already includes resonator effects), we must account for the resonator's contribution. The FFT magnitude $M_n$ at frequency $n\omega_0$ represents the combined magnitude of both series terms.
+
+\subsubsection{Derivation}
+
+Starting with the sum of two cosine terms:
+\begin{equation}
+s(t) = A_n \cos(n\omega_0 t + \phi_n) + \alpha_n A_n \cos(n\omega_0 t + \phi_n + \theta)
+\end{equation}
+
+Using the trigonometric identity $\cos(a + b) = \cos(a)\cos(b) - \sin(a)\sin(b)$:
+
+\begin{align}
+s(t) &= A_n \cos(n\omega_0 t + \phi_n) + \alpha_n A_n [\cos(n\omega_0 t + \phi_n)\cos(\theta) - \sin(n\omega_0 t + \phi_n)\sin(\theta)] \nonumber \\
+&= A_n [1 + \alpha_n \cos(\theta)] \cos(n\omega_0 t + \phi_n) - \alpha_n A_n \sin(\theta) \sin(n\omega_0 t + \phi_n)
+\end{align}
+
+This can be written as a single sinusoid $R \cos(n\omega_0 t + \phi_n + \delta)$, where the magnitude $R$ is:
+
+\begin{align}
+R &= A_n \sqrt{[1 + \alpha_n \cos(\theta)]^2 + [\alpha_n \sin(\theta)]^2} \nonumber \\
+&= A_n \sqrt{1 + 2\alpha_n \cos(\theta) + \alpha_n^2(\cos^2(\theta) + \sin^2(\theta))} \nonumber \\
+&= A_n \sqrt{1 + 2\alpha_n \cos(\theta) + \alpha_n^2}
+\end{align}
+
+Since $M_n$ (from FFT) represents the magnitude $R$ of the combined signal, we solve for $A_n$:
+
+\begin{equation}
+\label{eq:A_n_extraction}
+A_n = \frac{M_n}{\sqrt{1 + 2\alpha_n \cos(\theta) + \alpha_n^2}}
+\end{equation}
+
+This formula correctly accounts for the phase relationship between the two cosine terms when extracting the base amplitude coefficient.
+
+% ============================================================================
+% 3. METHODS
+% ============================================================================
+\section{Methods}
+
+\subsection{Data Collection}
+
+% TODO: Write section
+% - Three types of guitars: acoustic, classical, electric
+% - Three musical notes: C, D, E
+% - Sampling rate: 48 kHz
+% - Format: M4A audio files
+% - Duration: 7-10 seconds per recording
+% - Total: 9 instrument-note combinations
+% - Purpose: Reference signals representing acoustic characteristics
+
+\subsection{Feature Extraction}
+
+\subsubsection{Fundamental Frequency Estimation}
+The fundamental frequency $f_0$ was estimated by identifying the peak magnitude in the FFT spectrum within the range 20-2000 Hz. This provides $\omega_0 = 2\pi f_0$ for the Fourier series model.
+
+\subsubsection{Harmonic Detection}
+For each signal, 400 harmonics were extracted ($n = 0$ to 399), ensuring comprehensive coverage of the frequency spectrum. The harmonic frequencies are calculated as $n \cdot f_0$ for each harmonic index $n$.
+
+\subsubsection{Amplitude and Phase Extraction}
+For each harmonic:
+\begin{enumerate}
+    \item The FFT magnitude $M_n$ at frequency $n \cdot f_0$ was extracted
+    \item The phase $\phi_n$ was extracted from the FFT phase spectrum
+    \item The base amplitude $A_n$ was calculated using the derived formula:
+    \begin{equation}
+        A_n = \frac{M_n}{\sqrt{1 + 2\alpha_n \cos(\theta) + \alpha_n^2}}
+    \end{equation}
+    This accounts for the resonator effect already present in the recorded signal.
+\end{enumerate}
+
+\subsubsection{Envelope Extraction}
+The amplitude envelope was extracted using the Hilbert transform method, which provides an accurate representation of the signal's amplitude modulation over time. The envelope was then smoothed using a moving average filter (window size: 100 samples).
+
+\subsubsection{Decay Parameter Fitting}
+An exponential decay model $A_0 e^{-t/\tau}$ was fitted to the extracted envelope using linear regression on the logarithmic envelope values. This provides:
+\begin{itemize}
+    \item $A_0$: Initial amplitude (peak of the envelope)
+    \item $\tau$: Decay time constant
+\end{itemize}
+
+\subsection{Model Implementation}
+
+\subsubsection{Fourier Series Reconstruction}
+The signal was reconstructed using the dual Fourier series model:
+\begin{equation}
+f_{\text{reconstructed}}(t) = E(t) \cdot \left[ \sum_{n=0}^{399} A_n \cos\left(n\omega_0 t + \phi_n\right) + \sum_{n=0}^{399} \alpha_n A_n \cos\left(n\omega_0 t + \phi_n + \theta\right) \right]
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item $E(t) = A_0 e^{-t/\tau}$ is the exponential decay envelope
+    \item 400 harmonics ($n = 0$ to 399) are used
+    \item $\theta = \pi/4$ radians (45 degrees)
+    \item $\alpha_n$ is determined by the resonator response function (Equation~\ref{eq:alpha_n})
+\end{itemize}
+
+\subsubsection{Resonator Effect}
+The second series term models the resonator's contribution, with frequency-dependent scaling $\alpha_n$ and phase shift $\theta$. This dual-series approach captures both the direct signal and its interaction with the resonator.
+
+\subsection{Evaluation Metrics}
+
+To quantify the accuracy of the model, several metrics were computed for both time and frequency domains:
+
+\subsubsection{Time Domain Metrics}
+\begin{itemize}
+    \item \textbf{Pearson Correlation Coefficient}: Measures linear correlation between original and reconstructed signals
+    \item \textbf{Root Mean Squared Error (RMSE)}: Average magnitude of errors
+    \item \textbf{Mean Absolute Error (MAE)}: Average absolute difference
+    \item \textbf{Normalized Mean Squared Error}: MSE normalized by signal variance
+\end{itemize}
+
+\subsubsection{Frequency Domain Metrics}
+\begin{itemize}
+    \item \textbf{Frequency spectrum comparison}: Normalized magnitude spectra compared at each frequency
+    \item \textbf{Harmonic magnitude matching}: Comparison of individual harmonic amplitudes
+\end{itemize}
+
+\subsubsection{Amplitude Ratios}
+\begin{itemize}
+    \item \textbf{Max Ratio}: Ratio of maximum amplitudes (Fourier/Original)
+    \item \textbf{RMS Ratio}: Ratio of RMS amplitudes (Fourier/Original)
+\end{itemize}
+
+These metrics provide objective measures of how well the model replicates the original signal characteristics.
+
+% ============================================================================
+% 4. RESULTS
+% ============================================================================
+\section{Results}
+
+\subsection{Harmonic Detection}
+
+% TODO: Write section
+% - 400 harmonics used for all notes
+% - Fixed number ensures consistent analysis
+% - Comprehensive frequency spectrum coverage
+
+\subsection{Time Domain Matching}
+
+% TODO: Write section
+% - Waveform shape: close match, especially attack and sustain phases
+% - Amplitude envelope: exponential decay captures natural decay
+% - Phase alignment: preserved through $\phi_n$ coefficients
+
+\subsection{Frequency Domain Matching}
+
+% TODO: Write section
+% - Fundamental Frequency: Accurately identified and replicated (130-330 Hz range)
+% - Harmonic Magnitude: Primary harmonics well-matched, especially fundamental and lower-order
+% - Higher Frequency Content: Some discrepancies due to:
+%   - Continuous spectral content (noise floor) not representable by discrete harmonics
+%   - Very weak harmonics below extraction threshold
+%   - Inharmonic partials (non-integer multiples)
+
+\subsection{Quantitative Metrics}
+
+% TODO: Write section with actual numbers
+% - Time Domain: Strong correlations, RMSE/MAE reflect amplitude matching, normalized MSE accounts for variance
+% - Frequency Domain: Spectrum correlations show overall shape replication, individual harmonic comparisons
+% - Amplitude Ratios: Max and RMS ratios near 1.0 indicate good energy matching
+
+\subsection{Instrument-Specific Observations}
+
+% TODO: Write section
+% - Classical Guitar: Best matching, clear harmonic structure, strong fundamentals
+% - Acoustic Guitar: More complex spectral content (especially note E), denser frequency distributions
+% - Electric Guitar: Similar to acoustic, good fundamental matching, some higher frequency discrepancies
+
+\subsection{Effect of Harmonic Count}
+
+% TODO: Write section
+% - 400 harmonics vs. initial 31-77: significant improvement
+% - Better higher frequency representation
+% - More complete spectral coverage
+% - Improved amplitude matching across spectrum
+
+% ============================================================================
+% 5. DISCUSSION & CONCLUSION
+% ============================================================================
+\section{Discussion \& Conclusion}
+
+\subsection{Model Performance}
+
+\subsubsection{Strengths}
+\begin{itemize}
+    \item Accurate fundamental frequency identification
+    \item Good primary harmonic magnitude matching
+    \item Successful decay characteristics capture
+    \item Effective resonator effect modeling (dual-series approach)
+\end{itemize}
+
+\subsubsection{Limitations}
+\begin{itemize}
+    \item Cannot represent continuous spectral content (noise floor)
+    \item Limited to harmonic components (misses inharmonic partials)
+    \item Simplified resonator model (step function, constant phase)
+    \item Transient effects during attack may not be fully captured
+\end{itemize}
+
+\subsection{Sources of Discrepancy}
+
+% TODO: Expand each point
+% - Inherent Model Limitations: Fourier series only represents periodic harmonics; real sounds have inharmonic content
+% - Feature Extraction Challenges: Weak harmonics below threshold, noise affects accuracy, $f_0$ errors propagate
+% - Simplified Resonator Model: Step-function $\alpha_n$ may not match true response; constant $\theta$ may not capture frequency-dependent phase
+% - Spectral Characteristics: Real FFTs show leakage/broadening; model produces ideal sharp lines; noise floor not representable
+
+\subsection{Parameter Sensitivity}
+
+% TODO: Write section
+% - Number of Harmonics: 400 significantly improved matching; beyond 400 may have diminishing returns
+% - Resonator Parameters: Choice of $\alpha_n$ function and $\theta$ affects resonator effect replication
+% - Decay Parameters: Exponential model effectively captures decay; extracted $\tau$, $A_0$ provide good matches
+
+\subsection{Application to Electric Sasando Signal Generation}
+
+The Fourier model parameters extracted from reference signals can be directly applied to transform electric sasando input signals. The process involves:
+
+\subsubsection{Step 1: Parameter Extraction from Reference}
+Extract $A_n$, $\phi_n$, $f_0$, $\tau$, and $A_0$ from traditional sasando recordings or acoustic reference signals. These parameters define the target acoustic characteristics.
+
+\subsubsection{Step 2: Electric Sasando Input Processing}
+Take the electric sasando signal (from pickup) as input. Extract its fundamental frequency $f_0^{\text{elec}}$ and harmonic structure. This provides the base signal that needs transformation.
+
+\subsubsection{Step 3: Signal Transformation}
+The electric sasando signal $s_{\text{elec}}(t)$ is transformed using the extracted parameters:
+
+\begin{equation}
+\label{eq:electric_transformation}
+s_{\text{transformed}}(t) = E(t) \cdot \left[ \sum_{n=0}^{399} A_n^{\text{ref}} \cos\left(n\omega_0^{\text{elec}} t + \phi_n^{\text{ref}}\right) + \sum_{n=0}^{399} \alpha_n A_n^{\text{ref}} \cos\left(n\omega_0^{\text{elec}} t + \phi_n^{\text{ref}} + \theta\right) \right]
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item $A_n^{\text{ref}}$, $\phi_n^{\text{ref}}$: Amplitude and phase coefficients from reference (traditional sasando)
+    \item $\omega_0^{\text{elec}} = 2\pi f_0^{\text{elec}}$: Fundamental frequency from electric sasando input
+    \item $E(t) = A_0^{\text{ref}} e^{-t/\tau^{\text{ref}}}$: Decay envelope from reference
+    \item $\alpha_n$, $\theta$: Resonator parameters (same for all signals)
+\end{itemize}
+
+\textbf{Key Insight}: The electric sasando provides the fundamental frequency and timing, while the reference parameters provide the harmonic structure, phases, and decay characteristics. This creates a hybrid signal that combines the electric input's pitch with the acoustic reference's timbre.
+
+\subsubsection{Real-Time Implementation}
+For real-time processing:
+\begin{enumerate}
+    \item Continuously extract $f_0^{\text{elec}}$ from electric sasando input
+    \item Use pre-extracted $A_n^{\text{ref}}$, $\phi_n^{\text{ref}}$, $\tau^{\text{ref}}$, $A_0^{\text{ref}}$ from reference database
+    \item Synthesize output signal using the transformation equation (Equation~\ref{eq:electric_transformation})
+    \item Apply the decay envelope in real-time based on note onset detection
+\end{enumerate}
+
+\subsection{Applications and Future Work}
+
+\subsubsection{Applications}
+\begin{itemize}
+    \item The model provides a foundation for replicating traditional sasando sound in electric versions
+    \item The dual-series approach can be adapted for other resonator-based instruments
+    \item The method demonstrates how mathematical modeling can preserve acoustic characteristics
+\end{itemize}
+
+\subsubsection{Future Improvements}
+\begin{enumerate}
+    \item \textbf{Inharmonic Modeling}: Incorporate non-harmonic partials using frequency modulation or additive synthesis
+    \item \textbf{Noise Modeling}: Add a noise floor component to represent continuous spectral content
+    \item \textbf{Adaptive Resonator Model}: Learn or measure actual resonator frequency response for each instrument
+    \item \textbf{Time-Varying Parameters}: Allow $\alpha_n$ and $\theta$ to vary with time, especially during attack phase
+    \item \textbf{Better Fundamental Frequency Estimation}: Use more robust pitch tracking methods (autocorrelation, cepstral analysis)
+    \item \textbf{Spectral Envelope Modeling}: Model overall spectral shape in addition to discrete harmonics
+    \item \textbf{Real-Time Optimization}: Optimize the synthesis algorithm for low-latency real-time processing
+\end{enumerate}
+
+\subsection{Conclusion}
+
+% TODO: Write conclusion
+% - Mathematical model successfully captures primary harmonic structure and decay
+% - Demonstrates feasibility of preserving acoustic sound quality in electric instruments
+% - Extracted parameters ($A_n$, $\phi_n$, $f_0$, $\tau$, $A_0$) form compact representation
+% - Can be applied to transform electric sasando signals
+% - Combines electric input pitch with reference timbre
+% - 400 harmonics ensure comprehensive frequency coverage
+% - Dual-series approach effectively models resonator interactions
+% - While perfect replication not achievable with purely harmonic model, captures essential characteristics
+% - Future work on inharmonic modeling and sophisticated resonator representations can improve accuracy
+% - Enables real-time implementation in electric sasando systems
+
+% ============================================================================
+% REFERENCES
+% ============================================================================
+\begin{thebibliography}{99}
+
+\bibitem{oppenheim2010}
+Oppenheim, A. V., \& Schafer, R. W. (2010). \textit{Discrete-Time Signal Processing} (3rd ed.). Prentice Hall. Section 2.6: Sinusoidal Signals and Phasors.
+
+\bibitem{proakis2007}
+Proakis, J. G., \& Manolakis, D. G. (2007). \textit{Digital Signal Processing} (4th ed.). Prentice Hall. Chapter 2: Discrete-Time Signals and Systems.
+
+\bibitem{roads1996}
+Roads, C. (1996). \textit{The Computer Music Tutorial}. MIT Press. Chapters on additive synthesis and spectral analysis.
+
+\bibitem{smith2011}
+Smith, J. O. (2011). \textit{Spectral Audio Signal Processing}. W3K Publishing. Available online: \url{https://ccrma.stanford.edu/~jos/sasp/}
+
+\bibitem{fletcher1998}
+Fletcher, N. H., \& Rossing, T. D. (1998). \textit{The Physics of Musical Instruments} (2nd ed.). Springer-Verlag. Chapters on string instruments and resonators.
+
+\bibitem{librosa2020}
+McFee, B., et al. (2020). librosa: Audio and Music Analysis in Python. \textit{Journal of Open Source Software}, 5(50), 2154. \url{https://doi.org/10.21105/joss.02154}
+
+\bibitem{numpy2020}
+Harris, C. R., et al. (2020). Array programming with NumPy. \textit{Nature}, 585, 357–362. \url{https://doi.org/10.1038/s41586-020-2649-2}
+
+\bibitem{scipy2020}
+Virtanen, P., et al. (2020). SciPy 1.0: fundamental algorithms for scientific computing in Python. \textit{Nature Methods}, 17, 261–272. \url{https://doi.org/10.1038/s41592-019-0686-2}
+
+\end{thebibliography}
+
+% ============================================================================
+% APPENDIX
+% ============================================================================
+\appendix
+
+\section{Mathematical Model Implementation}
+
+\subsection{Core Functions}
+
+The following Python functions implement the mathematical model described in Section 2.
+
+\subsubsection{Signal Loading}
+The \texttt{load\_audio()} function loads audio files and returns time, amplitude, and sample rate arrays.
+
+\subsubsection{Envelope Extraction}
+The \texttt{extract\_envelope()} function extracts amplitude envelope using Hilbert transform with optional smoothing.
+
+\subsubsection{Fourier Series Reconstruction}
+The \texttt{process\_fourier\_series()} function reconstructs signals using the dual Fourier series model (Equation~\ref{eq:main_model}).
+
+\subsubsection{A$_n$ Extraction}
+The \texttt{extract\_A\_n()} function implements the A$_n$ extraction formula (Equation~\ref{eq:A_n_extraction}).
+
+\subsubsection{Resonator Response Function}
+The \texttt{alpha\_n\_func()} function implements the resonator response (Equation~\ref{eq:alpha_n}).
+
+\subsubsection{Decay Envelope Application}
+The \texttt{apply\_exponential\_decay()} function applies exponential decay envelope to signals.
+
+\subsection{Configuration Parameters}
+
+Key model parameters:
+\begin{itemize}
+    \item \texttt{NUM\_HARMONICS = 400}: Number of harmonics
+    \item \texttt{THETA = $\pi$/4}: Phase shift (45 degrees)
+    \item \texttt{INCLUDE\_RESONATOR = True}: Include resonator effect
+    \item \texttt{SASANDO\_FREQ\_MIN = 98} Hz: Minimum resonator frequency
+    \item \texttt{SASANDO\_FREQ\_MAX = 1047} Hz: Maximum resonator frequency
+    \item \texttt{ENVELOPE\_METHOD = 'hilbert'}: Envelope extraction method
+    \item \texttt{ENVELOPE\_SMOOTHING = 100}: Smoothing window size
+    \item \texttt{APPLY\_DECAY = True}: Apply exponential decay
+\end{itemize}
+
+\subsection{Complete Processing Pipeline}
+
+\begin{enumerate}
+    \item Load audio file
+    \item Extract envelope
+    \item Estimate fundamental frequency from FFT
+    \item Extract $A_n$ and $\phi_n$ for each harmonic
+    \item Reconstruct signal using Fourier series
+    \item Apply decay envelope
+    \item Compare with original signal
+\end{enumerate}
+
+\end{document}
+
