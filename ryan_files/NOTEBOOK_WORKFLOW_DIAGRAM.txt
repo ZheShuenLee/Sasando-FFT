@@ -1,0 +1,171 @@
+================================================================================
+SIGNAL COMPARISON MINIMAL V3: WORKFLOW DIAGRAM
+================================================================================
+
+INPUT: Audio Files (3 instruments × 3 notes = 9 files)
+┌─────────────────────────────────────────────────────────────────────────┐
+│  Instruments: acoustic guitar, classical guitar, electric guitar        │
+│  Notes: C, D, E                                                         │
+│  Format: .m4a files                                                     │
+└─────────────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                    ┌─────────────────────┐
+                    │  LOAD AUDIO FILE    │
+                    │  (librosa.load)     │
+                    └─────────────────────┘
+                              │
+                              ▼
+        ┌─────────────────────────────────────────────┐
+        │  EXTRACT FEATURES FROM ORIGINAL SIGNAL       │
+        │  • FFT → frequency spectrum                   │
+        │  • Estimate fundamental frequency (f₀)       │
+        │  • Auto-detect significant harmonics          │
+        │  • Extract magnitude (M_n) and phase (φ_n)   │
+        │  • Extract amplitude envelope (Hilbert)      │
+        └─────────────────────────────────────────────┘
+                              │
+                              ▼
+        ┌─────────────────────────────────────────────┐
+        │  EXTRACT A_n FROM M_n (accounting for        │
+        │  resonator effect)                           │
+        │                                              │
+        │  If INCLUDE_RESONATOR = True:                │
+        │    A_n = M_n / sqrt(1 + 2α_n cos(θ) + α_n²) │
+        │  Else:                                       │
+        │    A_n = M_n                                │
+        │                                              │
+        │  Where:                                      │
+        │    M_n = magnitude from FFT                  │
+        │    α_n = frequency-dependent scaling         │
+        │    θ = phase shift (π/4)                     │
+        └─────────────────────────────────────────────┘
+                              │
+                              ▼
+        ┌─────────────────────────────────────────────┐
+        │  FOURIER SERIES RECONSTRUCTION               │
+        │                                              │
+        │  f_steady(t) = Σ A_n cos(nω₀t + φ_n)        │
+        │              + Σ α_n A_n cos(nω₀t + φ_n + θ)│
+        │                                              │
+        │  Components:                                 │
+        │  • First sum: base signal harmonics          │
+        │  • Second sum: resonator contribution       │
+        └─────────────────────────────────────────────┘
+                              │
+                              ▼
+        ┌─────────────────────────────────────────────┐
+        │  DECAY ANALYSIS (if APPLY_DECAY = True)      │
+        │                                              │
+        │  1. Extract envelope from original signal   │
+        │  2. Fit exponential: A₀·exp(-t/τ)           │
+        │  3. Extract τ (decay constant) and A₀       │
+        │                                              │
+        │  If USE_EXTRACTED_DECAY = True:              │
+        │    Use fitted τ and A₀ from signal          │
+        │  Else:                                       │
+        │    Use MANUAL_DECAY_TAU and MANUAL_DECAY_A0 │
+        └─────────────────────────────────────────────┘
+                              │
+                              ▼
+        ┌─────────────────────────────────────────────┐
+        │  APPLY DECAY ENVELOPE                        │
+        │                                              │
+        │  f_decay(t) = E(t) · f_steady(t)            │
+        │                                              │
+        │  Where E(t) = A₀ · exp(-t/τ)                │
+        │                                              │
+        │  Scale to match initial amplitude of         │
+        │  original signal                             │
+        └─────────────────────────────────────────────┘
+                              │
+                              ▼
+        ┌─────────────────────────────────────────────┐
+        │  COMPARISON & VISUALIZATION                  │
+        │                                              │
+        │  Time Domain:                                │
+        │  • Original vs Fourier Model (with decay)    │
+        │  • Amplitude vs Time plots                   │
+        │                                              │
+        │  Frequency Domain:                            │
+        │  • Original vs Fourier Model                 │
+        │  • Normalized Magnitude vs Frequency         │
+        │  • Both normalized to original's peak        │
+        │                                              │
+        │  Metrics:                                    │
+        │  • Correlation, RMSE, MAE, Normalized MSE     │
+        │  • Max Ratio, RMS Ratio                      │
+        │  • Decay τ (tau)                             │
+        └─────────────────────────────────────────────┘
+                              │
+                              ▼
+                    ┌─────────────────────┐
+                    │  SUMMARY TABLES      │
+                    │  • Per instrument    │
+                    │  • Per note          │
+                    │  • Distribution      │
+                    │    comparison        │
+                    └─────────────────────┘
+
+================================================================================
+KEY PARAMETERS
+================================================================================
+
+CONFIGURATION:
+  • INSTRUMENTS: ['acoustic guitar', 'classical guitar', 'electric guitar']
+  • NOTES: ['C', 'D', 'E']
+  • NUM_HARMONICS: None (auto-detect) or integer
+  • MAX_HARMONICS: 70
+  • HARMONIC_THRESHOLD: 0.01 (1% of max magnitude)
+  • SASANDO_FREQ_MIN: 98 Hz
+  • SASANDO_FREQ_MAX: 1047 Hz
+  • THETA: π/4 (phase shift)
+  • INCLUDE_RESONATOR: True/False
+  • APPLY_DECAY: True/False
+  • USE_EXTRACTED_DECAY: True/False
+  • MANUAL_DECAY_TAU: 0.5 seconds
+  • MANUAL_DECAY_A0: 1.0
+
+ALPHA_N FUNCTION (frequency-dependent resonator response):
+  • α_n = 0.8 for frequencies in sasando range (98-1047 Hz)
+  • α_n = 0.2 for frequencies outside sasando range
+  • Applied per harmonic: α_n(n, f₀) = α(n·f₀)
+
+================================================================================
+MATHEMATICAL MODEL
+================================================================================
+
+Base Model (Steady-State):
+  f_steady(t) = Σ[n=0 to ∞] A_n cos(nω₀t + φ_n)
+              + Σ[n=0 to ∞] α_n A_n cos(nω₀t + φ_n + θ)
+
+Model with Decay:
+  f_decay(t) = E(t) · f_steady(t)
+  
+  Where E(t) = A₀ · exp(-t/τ)
+
+A_n Extraction (accounting for resonator):
+  M_n = magnitude from FFT at frequency n·f₀
+  A_n = M_n / sqrt(1 + 2α_n cos(θ) + α_n²)
+
+================================================================================
+OUTPUTS
+================================================================================
+
+For each instrument-note combination:
+  1. Time domain plots (Original vs Fourier Model)
+  2. Frequency domain plots (Original vs Fourier Model)
+  3. Overlay plots (both signals on same axes)
+  4. Summary statistics:
+     - Fundamental frequency
+     - Max ratio (Fourier/Original)
+     - RMS ratio (Fourier/Original)
+     - Decay τ (tau)
+  5. Distribution comparison metrics:
+     - Correlation
+     - RMSE (Root Mean Squared Error)
+     - MAE (Mean Absolute Error)
+     - Normalized MSE
+
+================================================================================
+
