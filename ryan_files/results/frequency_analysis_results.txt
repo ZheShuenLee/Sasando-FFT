@@ -1,0 +1,33 @@
+====================================================================================================
+FREQUENCY ANALYSIS RESULTS
+====================================================================================================
+
+File: ryan_files/Data/test/C_test_1.csv
+  Sample Rate: 48.0 Hz
+  Duration: 499.998 seconds
+  Fundamental Frequency: 22.04 Hz (magnitude: 0.001)
+  1st Harmonic: 24.00 Hz (magnitude: 0.000)
+  2nd Harmonic: 24.00 Hz (magnitude: 0.000)
+
+----------------------------------------------------------------------------------------------------
+
+File: ryan_files/Data/test/test10ms.csv
+  Sample Rate: 48.0 Hz
+  Duration: 9.980 seconds
+  Fundamental Frequency: 22.00 Hz (magnitude: 0.003)
+  1st Harmonic: 24.00 Hz (magnitude: 0.003)
+  2nd Harmonic: 24.00 Hz (magnitude: 0.003)
+
+----------------------------------------------------------------------------------------------------
+
+File: ryan_files/Data/test/test5000ms.csv
+  Sample Rate: 48.0 Hz
+  Duration: 499.998 seconds
+  Fundamental Frequency: 21.07 Hz (magnitude: 0.000)
+  1st Harmonic: 24.00 Hz (magnitude: 0.000)
+  2nd Harmonic: 24.00 Hz (magnitude: 0.000)
+
+----------------------------------------------------------------------------------------------------
+
+
+Total files analyzed: 3
