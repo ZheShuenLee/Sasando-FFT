@@ -86,7 +86,7 @@ Musical instruments produce notes by creating vibrations in a medium, such as a 
 
 The overtones constructively interfere with the fundamental frequency, introducing a level of complexity to the waveform of the note. The amplitude of each overtone depends on its interaction with the instrument – the absorption and reflection of the sound waves will be affected by the shape of the instrument and the material it is made of. As such, the resulting combination of harmonics, or timbre, is unique to each instrument. This is why the same note played on a guitar and a trumpet sounds very different, despite having the same fundamental frequency. 
 
-Since the timbre of musical instruments can be described as a combination of several sine waves, it can be mathematically expressed as a Fourier series shown in Equation 1:
+Since the timbre of musical instruments can be described as a combination of several sine waves, it can be mathematically expressed as a Fourier series shown in Equation (1):
 
 \begin{equation}
 \sum_{n} A_{n} \sin\!\left( \frac{n \pi f_{n} t}{T} \right)
@@ -250,7 +250,7 @@ The amplitude envelope was extracted using the Hilbert transform method, which p
 
 In order to account for the effect of the electronics, we must first investigate how an electric amplifier distorts the signal from a musical instrument. For this, the sound waves produced by an electric, acoustic, and classical guitar were compared. Guitars were used in this experiment since, like sasandos, they are string instruments and have their electric counterparts.
 
-Recordings were obtained of the guitars playing the notes C (130.81Hz), D (146.83Hz), E (164.81Hz), F (174.61Hz), and G (196.00Hz) \cite{mixbutton2025}. Five recordings were taken of each note for all three instruments in the form of M4A files with the same sampling rate (48000 Hz per second); during data analysis, an average of the repeats was obtained to mitigate the effects of random error. The files were truncated to have the same length as the file with the shortest length. A fast Fourier transform (FFT) was performed using the Python NumPy efficient FFT algorithm to obtain the frequencies and their amplitudes that compose the wavefunction of each note. The amplitudes of the frequencies are normalized to show relative amplitude strengths compared to the fundamental frequency (in cases where the fundamental frequency has the maximum strength).  
+Recordings were obtained of the guitars playing the notes C (130.81 Hz), D (146.83 Hz), E (164.81 Hz), F (174.61 Hz), and G (196.00 Hz) \cite{mixbutton2025}. Five recordings were taken of each note for all three instruments in the form of M4A files with the same sampling rate (48000 Hz per second); during data analysis, an average of the repeats was obtained to mitigate the effects of random error. The files were truncated to have the same length as the file with the shortest length. A fast Fourier transform (FFT) was performed using the Python NumPy efficient FFT algorithm to obtain the frequencies and their amplitudes that compose the wavefunction of each note. The amplitudes of the frequencies are normalized to show relative amplitude strengths compared to the fundamental frequency (in cases where the fundamental frequency has the maximum strength).  
 
 As seen in the plots in Figure~\ref{fig:6}, the spectrum of the electric guitar shows prominent features at higher frequencies that are absent in the other two guitars. This may be due to the distortion introduced by the guitar's electric amplification system at higher frequencies. If so, electric sasandos would likely experience a similar effect. Therefore, the high-frequency overtones must be damped. 
 
@@ -282,13 +282,27 @@ Several practical considerations must be made here. Firstly, the DSP must be sma
 
 \section{Results}
 
-The mathematical model was tested on recordings of acoustic, classical, and electric guitars playing the notes C, D, and E. Because both guitars and sasandos are plucked string instruments with similar harmonic spectra, the Fourier-based timbre characterization developed here can be directly applied to the sasando. For each instrument-note combination, the model was used to reconstruct the signal, and the reconstructed signal was compared to the original using both time-domain and frequency-domain metrics. Figure~\ref{fig:classical_results} shows an example comparison for classical guitar, demonstrating the model's ability to replicate both the time-domain waveform and frequency-domain spectrum.
+The mathematical model was tested on recordings of acoustic, classical, and electric guitars playing the notes C, D, and E. Because both guitars and sasandos are plucked string instruments with similar harmonic spectra, the Fourier-based timbre characterization developed here can be directly applied to the sasando. For each instrument-note combination, the model was used to reconstruct the signal, and the reconstructed signal was compared to the original using both time-domain and frequency-domain metrics. Figures~\ref{fig:classical_results}, \ref{fig:acoustic_results}, and \ref{fig:electric_results} show comparisons for classical, acoustic, and electric guitars respectively, demonstrating the model's ability to replicate both the time-domain waveform and frequency-domain spectrum across different instrument types.
 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.9\linewidth]{results_final/Classical guitar.png}
     \caption{Comparison of original and Fourier model signals for classical guitar. The plots show time-domain waveforms (top) and frequency-domain spectra (bottom) for notes C, D, and E.}
     \label{fig:classical_results}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{results_final/Acoustic Guitar.png}
+    \caption{Comparison of original and Fourier model signals for acoustic guitar. The plots show time-domain waveforms (top) and frequency-domain spectra (bottom) for notes C, D, and E.}
+    \label{fig:acoustic_results}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\linewidth]{results_final/Electric Guitar.png}
+    \caption{Comparison of original and Fourier model signals for electric guitar. The plots show time-domain waveforms (top) and frequency-domain spectra (bottom) for notes C, D, and E.}
+    \label{fig:electric_results}
 \end{figure}
 
 \subsection{Harmonic Analysis}
@@ -376,23 +390,25 @@ Electric Guitar & E & 0.1792 & 0.0133 & 0.0018 \\
 \end{tabular}
 \end{table}
 
-The frequency domain correlations are generally higher than the time domain correlations, with classical guitar D note achieving the highest correlation of 0.7419. This indicates that the model more accurately captures the harmonic structure and frequency content than the temporal waveform details. The classical guitar consistently shows the best frequency domain matching, with correlations above 0.46 for all three notes. The acoustic guitar E note also shows good frequency domain matching (0.5057), while the electric guitar E note shows poor correlation (0.1792), consistent with the time domain results.
+The frequency-domain correlations are generally higher than the time-domain correlations, with classical guitar D note achieving the highest correlation of 0.7419. This indicates that the model more accurately captures the harmonic structure and frequency content than the temporal waveform details. The classical guitar consistently shows the best frequency-domain matching, with correlations above 0.46 for all three notes. The acoustic guitar E note also shows good frequency-domain matching (0.5057), while the electric guitar E note shows poor correlation (0.1792), consistent with the time-domain results.
 
 \subsection{Quantitative Summary}
 
-Across all test cases, the average time-domain correlation is 0.388, and the average frequency-domain correlation is 0.451. This indicates that the model performs better at replicating frequency content than temporal waveforms. The classical guitar shows the best overall performance, with average correlations of 0.457 (time domain) and 0.604 (frequency domain). The electric guitar shows the most variable performance, with correlations ranging from 0.167 to 0.463 in the time domain and 0.179 to 0.493 in the frequency domain.
+Across all test cases, the average time-domain correlation is 0.388, and the average frequency-domain correlation is 0.451. This indicates that the model performs better at replicating frequency content than temporal waveforms. The classical guitar shows the best overall performance, with average correlations of 0.457 (time-domain) and 0.604 (frequency-domain). The electric guitar shows the most variable performance, with correlations ranging from 0.167 to 0.463 in the time domain and 0.179 to 0.493 in the frequency domain.
 
 \subsection{Instrument-Specific Observations}
 
 The results reveal distinct characteristics for each instrument type:
 
-\textbf{Classical Guitar:} The classical guitar demonstrates the best overall matching, with the highest frequency domain correlations (0.4658 to 0.7419) and strong time domain correlations (0.4378 to 0.4759). This instrument's clear harmonic structure and strong fundamental frequencies make it well-suited for the Fourier series model. The classical guitar also shows measurable decay constants for notes D and E, indicating longer sustain characteristics.
+\textbf{Classical Guitar:} The classical guitar demonstrates the best overall matching, with the highest frequency-domain correlations (0.4658 to 0.7419) and strong time-domain correlations (0.4378 to 0.4759). This instrument's clear harmonic structure and strong fundamental frequencies make it well-suited for the Fourier series model. The classical guitar also shows measurable decay constants for notes D and E, indicating longer sustain characteristics.
 
-\textbf{Acoustic Guitar:} The acoustic guitar shows moderate matching, with frequency domain correlations ranging from 0.2921 to 0.5057. The note E achieves the best frequency domain correlation (0.5057) among acoustic guitar notes, while note C shows the lowest (0.2921). The more complex spectral content of acoustic guitars, particularly in the higher frequency ranges, presents challenges for the model. However, the acoustic guitar shows the highest amplitude ratios (RMS ratios of 0.34 and 0.39 for notes C and D), suggesting better energy matching.
+\textbf{Acoustic Guitar:} The acoustic guitar shows moderate matching, with frequency-domain correlations ranging from 0.2921 to 0.5057. The note E achieves the best frequency-domain correlation (0.5057) among acoustic guitar notes, while note C shows the lowest (0.2921). The more complex spectral content of acoustic guitars, particularly in the higher frequency ranges, presents challenges for the model. However, the acoustic guitar shows the highest amplitude ratios (RMS ratios of 0.34 and 0.39 for notes C and D), suggesting better energy matching.
 
-\textbf{Electric Guitar:} The electric guitar exhibits variable performance, with note C showing good frequency domain correlation (0.4926) but note E showing poor correlation (0.1792). The electric guitar's additional high-frequency content from electronic amplification may contribute to the discrepancies observed, particularly for higher-pitched notes. The time domain correlation for electric guitar E (0.1674) is the lowest among all test cases, indicating significant challenges in modeling this particular combination.
+\textbf{Electric Guitar:} The electric guitar exhibits variable performance, with note C showing good frequency-domain correlation (0.4926) but note E showing poor correlation (0.1792). The electric guitar's additional high-frequency content from electronic amplification may contribute to the discrepancies observed, particularly for higher-pitched notes. The time-domain correlation for electric guitar E (0.1674) is the lowest among all test cases, indicating significant challenges in modeling this particular combination.
 
 \section{Discussion}
+
+The results presented in Figures~\ref{fig:classical_results}, \ref{fig:acoustic_results}, and \ref{fig:electric_results} demonstrate the model's ability to replicate both time-domain waveforms and frequency-domain spectra across different instrument types. These visual comparisons, combined with the quantitative metrics in Tables~\ref{tab:summary}, \ref{tab:time}, and \ref{tab:freq}, provide a comprehensive evaluation of the mathematical model's performance.
 
 \subsection{Strengths of our method}
 
@@ -403,7 +419,7 @@ The results reveal distinct characteristics for each instrument type:
     \item The dual Fourier series approach captures both harmonic structure and frequency-dependent amplification.
     \item Exponential decay modeling accurately represents the natural decay characteristics of plucked strings.
     \item Our model accurately captured fundamental frequencies from 130–330 Hz across all notes tested.
-    \item Frequency domain matching shows strong correlations, particularly for classical guitar (up to 0.7419).
+    \item Frequency-domain matching shows strong correlations, particularly for classical guitar (up to 0.7419).
     \item The feature extraction process reliably extracts harmonic amplitudes and phases from recorded signals.
 \end{itemize}
 
@@ -426,22 +442,22 @@ The mathematical model makes several assumptions that may not hold perfectly in 
     \item The constant phase shift assumption may not hold across all frequencies in reality.
     \item Noise and continuous spectral content may affect parameter extraction to some degree.
     \item Although the harmonic structure matches, the overall loudness remains slightly reduced (RMS < 1), suggesting the DSP would need gain compensation to match original signal levels.
-    \item Time domain correlations are moderate (0.17 to 0.48), suggesting that temporal waveform details are not fully captured. This may be due to transient effects during the attack phase that are not modeled.
+    \item Time-domain correlations are moderate (0.17 to 0.48), suggesting that temporal waveform details are not fully captured. This may be due to transient effects during the attack phase that are not modeled.
     \item Some notes, particularly electric guitar E (frequency correlation 0.1792), show poor matching, indicating limitations for certain frequency ranges or instrument types. The higher fundamental frequency (329.29 Hz) and complex high-frequency content may be contributing factors.
     \item Most signals show infinite decay constants, suggesting that the exponential decay model may not be appropriate for all signal types, or that the analysis window is too short to capture decay characteristics.
 \end{itemize}
 
 \subsection{Practical Implementation Considerations}
 
-For the DSP implementation, several practical considerations must be addressed. The computational requirements for processing 400 harmonics in real-time may be significant, particularly for a portable microprocessor. However, since the results show that the model performs well with fewer prominent harmonics (as evidenced by the good frequency domain correlations), it may be possible to reduce the number of harmonics processed in real-time without significant quality loss. The DSP must be capable of performing FFT analysis to identify the fundamental frequency, and then apply the appropriate modulating function from stored memory. The low amplitude ratios observed in the results suggest that gain adjustment will be necessary in the final implementation to match the original signal levels.
+For the DSP implementation, several practical considerations must be addressed. The computational requirements for processing 400 harmonics in real-time may be significant, particularly for a portable microprocessor. However, since the results show that the model performs well with fewer prominent harmonics (as evidenced by the good frequency-domain correlations), it may be possible to reduce the number of harmonics processed in real-time without significant quality loss. The DSP must be capable of performing FFT analysis to identify the fundamental frequency, and then apply the appropriate modulating function from stored memory. The low amplitude ratios observed in the results suggest that gain adjustment will be necessary in the final implementation to match the original signal levels.
 
 \section{Conclusion}
 
 The mathematical model developed in this work provides a framework for replicating the acoustic characteristics of traditional sasando instruments in electric versions. The dual Fourier series representation, incorporating frequency-dependent amplification and exponential decay, successfully captures the essential timbre components of string instruments.
 
-The results demonstrate that the model performs best on classical guitar signals, achieving frequency domain correlations up to 0.7419. This suggests that instruments with clear harmonic structures and strong fundamental frequencies are well-suited for this approach. The model's ability to accurately identify fundamental frequencies across a wide range (129.89 Hz to 329.29 Hz) confirms its robustness for different musical notes.
+The results demonstrate that the model performs best on classical guitar signals, achieving frequency-domain correlations up to 0.7419. This suggests that instruments with clear harmonic structures and strong fundamental frequencies are well-suited for this approach. The model's ability to accurately identify fundamental frequencies across a wide range (129.89 Hz to 329.29 Hz) confirms its robustness for different musical notes.
 
-However, the results also reveal limitations. The model consistently produces signals with lower amplitudes than the originals, and time domain correlations remain moderate. These discrepancies can be attributed to the model's assumptions, including perfect harmonic alignment, simplified resonator response, and the inability to represent continuous spectral content or inharmonic partials. The poor performance on electric guitar E note (correlation 0.1792) indicates that the model may have difficulty with higher-frequency notes or instruments with complex electronic amplification characteristics. Gain compensation in the DSP implementation can address the amplitude matching issues.
+However, the results also reveal limitations. The model consistently produces signals with lower amplitudes than the originals, and time-domain correlations remain moderate. These discrepancies can be attributed to the model's assumptions, including perfect harmonic alignment, simplified resonator response, and the inability to represent continuous spectral content or inharmonic partials. The poor performance on electric guitar E note (correlation 0.1792) indicates that the model may have difficulty with higher-frequency notes or instruments with complex electronic amplification characteristics. Gain compensation in the DSP implementation can address the amplitude matching issues.
 
 For practical implementation, the two-stage system proposed – a low-pass filter with 1047 Hz cutoff frequency combined with a DSP – provides a viable solution. The filter mitigates high-frequency electronic noise while preserving the frequency range that the traditional resonator amplifies. The DSP can then apply the mathematical model to add the resonator's characteristic timbre to the electric signal. The computational requirements can be managed by selecting the most prominent harmonics for real-time processing, and gain adjustment can address the amplitude matching issues.
 
@@ -485,6 +501,281 @@ Proakis, J. G., \& Manolakis, D. G. (2007). \textit{Digital Signal Processing} (
 \subsection{Python script for Fourier transforms}
 
 \lstinputlisting{Fourier transform (4).py}
+
+\subsection{Python Implementation for Fourier Model Analysis}
+
+The following Python code implements the mathematical model described in this paper. The code extracts harmonic coefficients from audio signals, applies the dual Fourier series model with exponential decay, and computes comparison metrics.
+
+\begin{lstlisting}[language=Python, basicstyle=\small\ttfamily, breaklines=true]
+import numpy as np
+import librosa
+from scipy.fft import rfft, rfftfreq
+from scipy.signal import hilbert
+from scipy.optimize import curve_fit
+
+# Configuration parameters
+NUM_HARMONICS = 400  # Number of harmonics to extract
+THETA = np.pi / 4  # Phase shift (radians)
+INCLUDE_RESONATOR = True  # Include resonator effect (second series)
+SASANDO_FREQ_MIN = 98  # Minimum frequency for sasando range (Hz)
+SASANDO_FREQ_MAX = 1047  # Maximum frequency for sasando range (Hz)
+
+def alpha_n_func(n, f0):
+    """Frequency-dependent scaling based on sasando range (98-1047 Hz)"""
+    freq_hz = n * f0
+    return 0.8 if SASANDO_FREQ_MIN <= freq_hz <= SASANDO_FREQ_MAX else 0.2
+
+def extract_envelope(signal, sample_rate, method='hilbert', smoothing_window=100):
+    """
+    Extract amplitude envelope from signal using Hilbert transform.
+    
+    Parameters:
+    -----------
+    signal : array
+        Input signal
+    sample_rate : float
+        Sampling rate (Hz)
+    method : str
+        'hilbert' for Hilbert transform, 'abs' for simple absolute value
+    smoothing_window : int
+        Window size for smoothing (in samples)
+    
+    Returns:
+    --------
+    envelope : array
+        Amplitude envelope
+    """
+    if method == 'hilbert':
+        analytic_signal = hilbert(signal)
+        envelope = np.abs(analytic_signal)
+    else:
+        envelope = np.abs(signal)
+    
+    # Smooth the envelope
+    if smoothing_window > 1:
+        kernel = np.ones(smoothing_window) / smoothing_window
+        envelope = np.convolve(envelope, kernel, mode='same')
+    
+    return envelope
+
+def process_fourier_series(signal, sample_rate, time, omega_0, num_harmonics,
+                           A_n, phi_n, alpha_n_func, theta, include_resonator=True):
+    """
+    Process signal using Fourier series model:
+    f(t) = Σ A_n cos(nω₀t + φ_n) + Σ α_n A_n cos(nω₀t + φ_n + θ)
+    
+    Parameters:
+    -----------
+    signal : array
+        Input signal (for reference)
+    sample_rate : float
+        Sampling rate (Hz)
+    time : array
+        Time array
+    omega_0 : float
+        Fundamental angular frequency (rad/s)
+    num_harmonics : int
+        Number of harmonics to use
+    A_n : array
+        Amplitude coefficients for each harmonic
+    phi_n : array
+        Phase coefficients for each harmonic
+    alpha_n_func : function
+        Function that returns α_n for harmonic n
+    theta : float
+        Phase shift (radians)
+    include_resonator : bool
+        If True, include second series (resonator effect)
+    
+    Returns:
+    --------
+    processed : array
+        Reconstructed signal
+    """
+    f0_hz = omega_0 / (2 * np.pi)
+    processed = np.zeros_like(time)
+    
+    for n in range(num_harmonics):
+        A = A_n[n]
+        phi = phi_n[n]
+        
+        # First series: A_n cos(nω₀t + φ_n)
+        processed += A * np.cos(n * omega_0 * time + phi)
+        
+        # Second series: α_n A_n cos(nω₀t + φ_n + θ)
+        if include_resonator:
+            alpha = alpha_n_func(n, f0_hz)
+            processed += alpha * A * np.cos(n * omega_0 * time + phi + theta)
+    
+    return processed
+
+def compute_distribution_metrics(signal1, signal2):
+    """
+    Compute comparison metrics between two signals.
+    
+    Returns:
+    --------
+    dict with keys: correlation, mse, rmse, mae, normalized_mse
+    """
+    min_len = min(len(signal1), len(signal2))
+    s1 = signal1[:min_len]
+    s2 = signal2[:min_len]
+    
+    # Normalize signals
+    s1_norm = (s1 - np.mean(s1)) / (np.std(s1) + 1e-10)
+    s2_norm = (s2 - np.mean(s2)) / (np.std(s1) + 1e-10)
+    
+    # Compute metrics
+    correlation = np.corrcoef(s1, s2)[0, 1] if len(s1) > 1 else 0.0
+    mse = np.mean((s1 - s2)**2)
+    rmse = np.sqrt(mse)
+    mae = np.mean(np.abs(s1 - s2))
+    var_orig = np.var(s1)
+    normalized_mse = mse / (var_orig + 1e-10)
+    
+    return {
+        'correlation': correlation,
+        'mse': mse,
+        'rmse': rmse,
+        'mae': mae,
+        'normalized_mse': normalized_mse
+    }
+
+# Main processing loop
+def analyze_audio_file(file_path, num_harmonics=NUM_HARMONICS):
+    """
+    Analyze audio file and extract Fourier model parameters.
+    
+    Returns:
+    --------
+    dict containing extracted parameters and reconstructed signal
+    """
+    # Load audio
+    amplitude, sample_rate = librosa.load(file_path, sr=None, mono=True)
+    time = np.arange(len(amplitude)) / sample_rate
+    
+    # Compute FFT
+    fft_signal = rfft(amplitude)
+    freqs = rfftfreq(len(amplitude), 1/sample_rate)
+    magnitude = np.abs(fft_signal)
+    phase = np.angle(fft_signal)
+    
+    # Estimate fundamental frequency
+    mask = (freqs >= 20) & (freqs <= 2000)
+    peak_idx = np.argmax(magnitude[mask])
+    estimated_f0 = freqs[mask][peak_idx]
+    omega_0 = 2 * np.pi * estimated_f0
+    
+    # Extract A_n and phi_n for each harmonic
+    A_n_extracted = []
+    phi_n_extracted = []
+    
+    for n in range(num_harmonics):
+        target_freq = n * estimated_f0
+        if target_freq <= freqs[-1]:
+            idx = np.argmin(np.abs(freqs - target_freq))
+            
+            # Get magnitude from FFT
+            if n == 0:
+                M_n = magnitude[idx] / len(amplitude)
+            else:
+                M_n = 2 * magnitude[idx] / len(amplitude)
+            
+            # Extract A_n accounting for resonator effect
+            if INCLUDE_RESONATOR:
+                alpha_n_value = alpha_n_func(n, estimated_f0)
+                magnitude_factor = np.sqrt(1 + 2 * alpha_n_value * 
+                                          np.cos(THETA) + alpha_n_value**2)
+                A_n = M_n / magnitude_factor if magnitude_factor > 0 else M_n
+            else:
+                A_n = M_n
+            
+            phi_n = phase[idx]
+            A_n_extracted.append(A_n)
+            phi_n_extracted.append(phi_n)
+        else:
+            A_n_extracted.append(0.0)
+            phi_n_extracted.append(0.0)
+    
+    # Extract envelope and fit exponential decay
+    envelope = extract_envelope(amplitude, sample_rate)
+    peak_envelope = np.max(envelope)
+    
+    # Fit exponential decay: E(t) = A0 * exp(-t/tau)
+    def exp_decay(t, A0, tau):
+        return A0 * np.exp(-t / tau)
+    
+    try:
+        # Use first 80% of signal for fitting
+        fit_end = int(0.8 * len(time))
+        popt, _ = curve_fit(exp_decay, time[:fit_end], 
+                           envelope[:fit_end], 
+                           p0=[peak_envelope, 1.0],
+                           maxfev=5000)
+        A0_fit, tau = popt
+        if tau <= 0 or tau > 1000:
+            tau = np.inf
+    except:
+        tau = np.inf
+        A0_fit = peak_envelope
+    
+    # Reconstruct signal using Fourier model
+    A_n_array = np.array(A_n_extracted)
+    phi_n_array = np.array(phi_n_extracted)
+    
+    amplitude_fourier = process_fourier_series(
+        amplitude, sample_rate, time,
+        omega_0=omega_0,
+        num_harmonics=num_harmonics,
+        A_n=A_n_array,
+        phi_n=phi_n_array,
+        alpha_n_func=alpha_n_func,
+        theta=THETA,
+        include_resonator=INCLUDE_RESONATOR
+    )
+    
+    # Apply exponential decay envelope
+    if tau < np.inf and tau > 0:
+        envelope_decay = A0_fit * np.exp(-time / tau)
+        amplitude_fourier_decay = amplitude_fourier * envelope_decay
+    else:
+        amplitude_fourier_decay = amplitude_fourier.copy()
+    
+    # Compute comparison metrics
+    time_metrics = compute_distribution_metrics(amplitude, amplitude_fourier_decay)
+    
+    # Frequency domain metrics
+    fft_orig = rfft(amplitude)
+    fft_fourier = rfft(amplitude_fourier_decay)
+    mag_orig = np.abs(fft_orig)
+    mag_fourier = np.abs(fft_fourier)
+    freq_metrics = compute_distribution_metrics(mag_orig, mag_fourier)
+    
+    return {
+        'time': time,
+        'amplitude_original': amplitude,
+        'amplitude_fourier_decay': amplitude_fourier_decay,
+        'f0': estimated_f0,
+        'A_n': A_n_extracted,
+        'phi_n': phi_n_extracted,
+        'decay_tau': tau,
+        'decay_A0': A0_fit,
+        'time_metrics': time_metrics,
+        'freq_metrics': freq_metrics
+    }
+\end{lstlisting}
+
+This implementation demonstrates the key steps of the analysis:
+\begin{enumerate}
+    \item \textbf{Audio Loading}: Load audio files using librosa
+    \item \textbf{FFT Analysis}: Compute FFT to extract frequency components
+    \item \textbf{Fundamental Frequency Estimation}: Identify the fundamental frequency from the FFT spectrum
+    \item \textbf{Harmonic Extraction}: Extract $A_n$ and $\phi_n$ for each harmonic using Equation (6) to account for resonator effects
+    \item \textbf{Envelope Extraction}: Extract amplitude envelope using Hilbert transform
+    \item \textbf{Decay Fitting}: Fit exponential decay model to the envelope
+    \item \textbf{Signal Reconstruction}: Reconstruct signal using the dual Fourier series model with exponential decay
+    \item \textbf{Metrics Computation}: Compute correlation, RMSE, MAE, and normalized MSE for both time and frequency domains
+\end{enumerate}
 
 \end{document}
 
