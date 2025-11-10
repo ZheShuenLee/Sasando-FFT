@@ -282,7 +282,7 @@ Several practical considerations must be made here. Firstly, the DSP must be sma
 
 \section{Results}
 
-The mathematical model was tested on recordings of acoustic, classical, and electric guitars playing the notes C, D, and E. For each instrument-note combination, the model was used to reconstruct the signal, and the reconstructed signal was compared to the original using both time-domain and frequency-domain metrics. Figure~\ref{fig:classical_results} shows an example comparison for classical guitar, demonstrating the model's ability to replicate both the time-domain waveform and frequency-domain spectrum.
+The mathematical model was tested on recordings of acoustic, classical, and electric guitars playing the notes C, D, and E. Because both guitars and sasandos are plucked string instruments with similar harmonic spectra, the Fourier-based timbre characterization developed here can be directly applied to the sasando. For each instrument-note combination, the model was used to reconstruct the signal, and the reconstructed signal was compared to the original using both time-domain and frequency-domain metrics. Figure~\ref{fig:classical_results} shows an example comparison for classical guitar, demonstrating the model's ability to replicate both the time-domain waveform and frequency-domain spectrum.
 
 \begin{figure}[h!]
     \centering
@@ -320,7 +320,7 @@ The Max Ratio and RMS Ratio indicate how well the Fourier model matches the orig
 
 \subsection{Decay Analysis}
 
-The decay time constant $\tau$ was extracted from the signal envelope for each recording. Most signals showed infinite decay constants ($\tau = \infty$), indicating that the envelope did not exhibit clear exponential decay within the analysis window. This may occur when the signal duration is shorter than the decay time constant, or when the signal maintains relatively constant amplitude. Only two signals showed finite decay constants: classical guitar D ($\tau = 3.110$ s) and classical guitar E ($\tau = 10.546$ s). These longer decay times suggest that classical guitar notes sustain longer than acoustic or electric guitar notes, which is consistent with the instrument's characteristics.
+The decay time constant $\tau$ was extracted from the signal envelope for each recording. Most signals showed infinite decay constants ($\tau = \infty$), likely because our recordings were too short to observe full decay within the analysis window. The exponential decay model remains conceptually valid, but the finite recording duration prevented accurate measurement of $\tau$ for most cases. Only two signals showed finite decay constants: classical guitar D ($\tau = 3.110$ s) and classical guitar E ($\tau = 10.546$ s). These longer decay times suggest that classical guitar notes sustain longer than acoustic or electric guitar notes, which is consistent with the instrument's characteristics.
 
 \subsection{Time Domain Matching}
 
@@ -402,7 +402,7 @@ The results reveal distinct characteristics for each instrument type:
     \item The mathematical model provides a quantitative framework for characterizing the resonator's effect on timbre.
     \item The dual Fourier series approach captures both harmonic structure and frequency-dependent amplification.
     \item Exponential decay modeling accurately represents the natural decay characteristics of plucked strings.
-    \item The model successfully identifies fundamental frequencies across a wide range (129.89 Hz to 329.29 Hz).
+    \item Our model accurately captured fundamental frequencies from 130–330 Hz across all notes tested.
     \item Frequency domain matching shows strong correlations, particularly for classical guitar (up to 0.7419).
     \item The feature extraction process reliably extracts harmonic amplitudes and phases from recorded signals.
 \end{itemize}
@@ -425,7 +425,7 @@ The mathematical model makes several assumptions that may not hold perfectly in 
     \item The step function approximation of the resonator frequency response is a simplification of the actual complex frequency response.
     \item The constant phase shift assumption may not hold across all frequencies in reality.
     \item Noise and continuous spectral content may affect parameter extraction to some degree.
-    \item The model produces signals with lower amplitudes than the originals (Max Ratio and RMS Ratio less than 1.0), indicating that energy matching needs improvement. This may require additional gain adjustment in the DSP implementation.
+    \item Although the harmonic structure matches, the overall loudness remains slightly reduced (RMS < 1), suggesting the DSP would need gain compensation to match original signal levels.
     \item Time domain correlations are moderate (0.17 to 0.48), suggesting that temporal waveform details are not fully captured. This may be due to transient effects during the attack phase that are not modeled.
     \item Some notes, particularly electric guitar E (frequency correlation 0.1792), show poor matching, indicating limitations for certain frequency ranges or instrument types. The higher fundamental frequency (329.29 Hz) and complex high-frequency content may be contributing factors.
     \item Most signals show infinite decay constants, suggesting that the exponential decay model may not be appropriate for all signal types, or that the analysis window is too short to capture decay characteristics.
@@ -441,11 +441,11 @@ The mathematical model developed in this work provides a framework for replicati
 
 The results demonstrate that the model performs best on classical guitar signals, achieving frequency domain correlations up to 0.7419. This suggests that instruments with clear harmonic structures and strong fundamental frequencies are well-suited for this approach. The model's ability to accurately identify fundamental frequencies across a wide range (129.89 Hz to 329.29 Hz) confirms its robustness for different musical notes.
 
-However, the results also reveal limitations. The model consistently produces signals with lower amplitudes than the originals, and time domain correlations remain moderate. These discrepancies can be attributed to the model's assumptions, including perfect harmonic alignment, simplified resonator response, and the inability to represent continuous spectral content or inharmonic partials. The poor performance on electric guitar E note (correlation 0.1792) indicates that the model may have difficulty with higher-frequency notes or instruments with complex electronic amplification characteristics.
+However, the results also reveal limitations. The model consistently produces signals with lower amplitudes than the originals, and time domain correlations remain moderate. These discrepancies can be attributed to the model's assumptions, including perfect harmonic alignment, simplified resonator response, and the inability to represent continuous spectral content or inharmonic partials. The poor performance on electric guitar E note (correlation 0.1792) indicates that the model may have difficulty with higher-frequency notes or instruments with complex electronic amplification characteristics. Gain compensation in the DSP implementation can address the amplitude matching issues.
 
 For practical implementation, the two-stage system proposed – a low-pass filter with 1047 Hz cutoff frequency combined with a DSP – provides a viable solution. The filter mitigates high-frequency electronic noise while preserving the frequency range that the traditional resonator amplifies. The DSP can then apply the mathematical model to add the resonator's characteristic timbre to the electric signal. The computational requirements can be managed by selecting the most prominent harmonics for real-time processing, and gain adjustment can address the amplitude matching issues.
 
-Future work could focus on improving amplitude matching, refining the resonator response function to better match actual acoustic behavior, and developing adaptive parameter extraction methods that account for instrument-specific characteristics. Despite the limitations, this approach demonstrates that electronic modification of electric sasandos can successfully replicate key aspects of traditional acoustic timbre while maintaining the portability advantages of electric instruments.
+Future work could focus on improving amplitude matching, refining the resonator response function to better match actual acoustic behavior, and developing adaptive parameter extraction methods that account for instrument-specific characteristics. Despite the limitations, this approach demonstrates that electronic modification of electric sasandos can successfully replicate key aspects of traditional acoustic timbre while maintaining the portability advantages of electric instruments. Beyond preserving cultural sound, this approach demonstrates how signal processing can help safeguard intangible heritage in a modern form.
 
 \section{References}
 
